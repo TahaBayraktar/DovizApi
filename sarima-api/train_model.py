@@ -55,7 +55,7 @@ def get_sarima_forecast():
     ]
 
     # JSON dosyasına kaydet
-    with open("tahmin.json", "w", encoding="utf-8") as f:
+    with open("./tahmin.json", "w", encoding="utf-8") as f:
         json.dump(json_output, f, ensure_ascii=False, indent=2)
 
 if __name__ == "__main__":
