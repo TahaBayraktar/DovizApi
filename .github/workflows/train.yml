@@ -9,6 +9,9 @@ jobs:
   train:
     runs-on: ubuntu-latest
 
+    env:
+      EVDS_API_KEY: ${{ secrets.EVDS_API_KEY }}
+
     steps:
       - name: Kodu klonla
         uses: actions/checkout@v3
@@ -27,12 +30,6 @@ jobs:
         run: |
           cd sarima-api
           python train_model.py
-
-
-      - name: Tahmin dosyası var mı kontrol et
-        run: |
-          ls -l tahmin.json || echo "tahmin.json yok"
-          cat tahmin.json || echo "İçeriği okunamadı"
 
       - name: JSON'u GitHub'a geri push et
         run: |
