@@ -35,7 +35,10 @@ jobs:
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Actions Bot"
-          git add sarima-api/tahmin.json 
+          git add sarima-api/tahmin.json
           git commit -m "🌙 Gece otomatik model eğitimi"
           git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/TahaBayraktar/DovizApi.git HEAD:main
         continue-on-error: true
+
+
+  
