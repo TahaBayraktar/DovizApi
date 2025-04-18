@@ -43,7 +43,7 @@ model = SARIMAX(df["Dolar_Kuru"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 30))
 result = model.fit(disp=False)
 print("✅ Model eğitildi.")
 
-# ⏳ Bugünden itibaren 21 gün tahmin
+# ⏳ Bugünden itibaren 30 gün tahmin
 forecast_steps = 30
 forecast = result.get_forecast(steps=forecast_steps)
 pred = forecast.predicted_mean.reset_index(drop=True)
@@ -60,14 +60,14 @@ json_output = [
     for i, date in enumerate(future_dates)
 ]
 
-
-# json_output listesine ek olarak bir metadata dict'i yaz
+# ✅ Ekstra bilgi: tahmin zamanı
 output_data = {
     "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    "forecast_days": forecast_steps,
     "forecasts": json_output
 }
 
 with open("tahmin.json", "w", encoding="utf-8") as f:
-    json.dump(json_output, f, ensure_ascii=False, indent=2)
+    json.dump(output_data, f, ensure_ascii=False, indent=2)
 
 print("📁 tahmin.json başarıyla oluşturuldu.")
