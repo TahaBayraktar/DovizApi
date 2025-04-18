@@ -44,7 +44,7 @@ result = model.fit(disp=False)
 print("✅ Model eğitildi.")
 
 # ⏳ Bugünden itibaren 21 gün tahmin
-forecast_steps = 21
+forecast_steps = 30
 forecast = result.get_forecast(steps=forecast_steps)
 pred = forecast.predicted_mean.reset_index(drop=True)
 conf = forecast.conf_int().reset_index(drop=True)
