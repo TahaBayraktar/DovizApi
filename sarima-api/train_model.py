@@ -7,17 +7,23 @@ from io import StringIO
 from datetime import datetime, timedelta
 import os
 import urllib3
+from pytz import timezone
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def get_forecast_for_currency(series_code, label, steps=30):
     startDate = "01-01-2021"
-    endDate = datetime.now().strftime("%d-%m-%Y")
+    
+    # 🇹🇷 Türkiye saatiyle bugünün tarihi
+    turkey_time = datetime.now(timezone("Europe/Istanbul"))
+    endDate = turkey_time.strftime("%d-%m-%Y")
+    
     url = (
         f"https://evds2.tcmb.gov.tr/service/evds/series={series_code}"
         f"&startDate={startDate}&endDate={endDate}&type=csv"
         f"&aggregationTypes=avg&formulas=0&frequency=1"
     )
+    
     headers = {
         "User-Agent": "Mozilla/5.0",
         "key": os.getenv("EVDS_API_KEY")
@@ -56,17 +62,15 @@ def get_forecast_for_currency(series_code, label, steps=30):
     
     return forecast_data
 
-# Tahminleri al
+# 🔮 Tahminleri al
 usd_forecast = get_forecast_for_currency("TP.DK.USD.S.YTL", "USD")
 eur_forecast = get_forecast_for_currency("TP.DK.EUR.S.YTL", "EUR")
 
-# JSON formatı
-from pytz import timezone
-
-turkey_time = datetime.now(timezone("Europe/Istanbul")).strftime("%Y-%m-%d %H:%M:%S")
+# ⏰ Türkiye saatiyle tahmin zamanı
+turkey_now = datetime.now(timezone("Europe/Istanbul")).strftime("%Y-%m-%d %H:%M:%S")
 
 output = {
-    "generated_at": turkey_time,
+    "generated_at": turkey_now,
     "forecast_days": 30,
     "forecasts": {
         "USD": usd_forecast,
@@ -74,7 +78,7 @@ output = {
     }
 }
 
-# Kaydetme
+# 💾 JSON dosyasına kaydet
 with open("tahmin.json", "w", encoding="utf-8") as f:
     json.dump(output, f, ensure_ascii=False, indent=2)
 
