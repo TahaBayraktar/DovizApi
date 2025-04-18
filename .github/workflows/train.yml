@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Kodu klonla
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Python kurulumu
         uses: actions/setup-python@v4
@@ -38,5 +40,5 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git add sarima-api/tahmin.json
           git commit -m "🌙 Gece otomatik model eğitimi"
-          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/TahaBayraktar/DovizApi.git HEAD:main
+          git push
         continue-on-error: true
