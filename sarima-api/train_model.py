@@ -6,6 +6,10 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 from io import StringIO
 from datetime import datetime, timedelta
 import os
+import urllib3
+
+# Uyarı bastır (TCMB için SSL doğrulama devre dışı)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def get_sarima_forecast():
     series = "TP.DK.USD.S.YTL"
@@ -23,20 +27,31 @@ def get_sarima_forecast():
         "key": os.getenv("EVDS_API_KEY")
     }
 
+    print("🌐 Veri çekiliyor...")
     response = requests.get(url, headers=headers, verify=False)
+
     if response.status_code != 200:
-        return {"error": f"Veri alınamadı. HTTP {response.status_code}"}
+        print(f"❌ Veri alınamadı. HTTP {response.status_code}")
+        return
+
+    print("✅ Veri çekildi.")
 
     df = pd.read_csv(StringIO(response.text)).dropna()
     df.set_index("Tarih", inplace=True)
     df.rename(columns={series.replace(".", "_"): "Dolar_Kuru"}, inplace=True)
     df.index = pd.to_datetime(df.index, format="%d-%m-%Y")
 
-    # İyileştirme: Son 180 günle sınırlı veri
+    # Son 180 günle sınırla
     df = df[df.index >= (datetime.now() - timedelta(days=180))]
+    print(f"📊 Toplam veri sayısı: {len(df)}")
 
-    model = SARIMAX(df["Dolar_Kuru"], order=(1,1,1), seasonal_order=(1,1,1,30))
-    result = model.fit(disp=False)
+    try:
+        model = SARIMAX(df["Dolar_Kuru"], order=(1,1,1), seasonal_order=(1,1,1,30))
+        result = model.fit(disp=False)
+        print("✅ Model başarıyla eğitildi.")
+    except Exception as e:
+        print(f"❌ Model eğitimi başarısız: {e}")
+        return
 
     steps = 21
     future_dates = pd.date_range(df.index[-1] + timedelta(days=1), periods=steps, freq="D")
@@ -54,9 +69,15 @@ def get_sarima_forecast():
         for i, date in enumerate(future_dates)
     ]
 
-    # JSON dosyasına kaydet
-    with open("tahmin.json", "w", encoding="utf-8") as f:
-        json.dump(json_output, f, ensure_ascii=False, indent=2)
+    print(f"📈 Tahmin üretildi: {len(json_output)} gün")
+
+    try:
+        file_path = os.path.join(os.getcwd(), "tahmin.json")
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(json_output, f, ensure_ascii=False, indent=2)
+        print(f"✅ tahmin.json başarıyla oluşturuldu: {file_path}")
+    except Exception as e:
+        print(f"❌ JSON yazım hatası: {e}")
 
 if __name__ == "__main__":
     get_sarima_forecast()
