@@ -35,7 +35,7 @@ def get_sarima_forecast():
     # İyileştirme: Son 180 günle sınırlı veri
     df = df[df.index >= (datetime.now() - timedelta(days=180))]
 
-    model = SARIMAX(df["Dolar_Kuru"], order=(1,1,1), seasonal_order=(1,1,1,30))
+    model = SARIMAX(df["Dolar_Kuru"], order=(1, 1, 1), seasonal_order=(1, 1, 1, 30))
     result = model.fit(disp=False)
 
     steps = 21
@@ -54,8 +54,8 @@ def get_sarima_forecast():
         for i, date in enumerate(future_dates)
     ]
 
-    # JSON dosyasına kaydet
-   with open("sarima-api/tahmin.json", "w", encoding="utf-8") as f:
+    # JSON dosyasına sarima-api klasörüne kaydet
+    with open("sarima-api/tahmin.json", "w", encoding="utf-8") as f:
         json.dump(json_output, f, ensure_ascii=False, indent=2)
 
 if __name__ == "__main__":
