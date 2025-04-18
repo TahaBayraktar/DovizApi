@@ -61,8 +61,12 @@ usd_forecast = get_forecast_for_currency("TP.DK.USD.S.YTL", "USD")
 eur_forecast = get_forecast_for_currency("TP.DK.EUR.S.YTL", "EUR")
 
 # JSON formatı
+from pytz import timezone
+
+turkey_time = datetime.now(timezone("Europe/Istanbul")).strftime("%Y-%m-%d %H:%M:%S")
+
 output = {
-    "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    "generated_at": turkey_time,
     "forecast_days": 30,
     "forecasts": {
         "USD": usd_forecast,
