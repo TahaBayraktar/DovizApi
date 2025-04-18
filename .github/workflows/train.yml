@@ -2,7 +2,7 @@ name: Train SARIMA Model Daily
 
 on:
   schedule:
-    - cron: '0 21 * * *'  # 🌙 Her gece 00:00'da (TR) çalışır
+    - cron: '0 1 * * *'  # 🌙 Her gece saat 04:00'te (Türkiye saatiyle) çalışır
   workflow_dispatch:
 
 jobs:
