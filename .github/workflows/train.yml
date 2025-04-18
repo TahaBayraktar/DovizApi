@@ -1,0 +1,38 @@
+name: Train SARIMA Model Daily
+
+on:
+  schedule:
+    - cron: '0 21 * * *'  # Her gün TR saatiyle 00:00
+  workflow_dispatch:
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kodu klonla
+        uses: actions/checkout@v3
+
+      - name: Python kurulumu
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Kütüphaneleri yükle
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r sarima-api/requirements.txt
+
+      - name: Modeli eğit ve tahmin üret
+        run: |
+          cd sarima-api
+          python train_model.py
+
+      - name: JSON'u GitHub'a geri push et
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Actions Bot"
+          git add tahmin.json
+          git commit -m "🌙 Gece otomatik model eğitimi"
+          git push
+        continue-on-error: true
