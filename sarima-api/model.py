@@ -38,7 +38,7 @@ def fetch_currency_data(series_code):
     model = SARIMAX(df["Kur"], order=(1,1,1), seasonal_order=(1,1,1,30))
     result = model.fit(disp=False)
 
-    steps = 21
+    steps = 90
     future_dates = pd.date_range(df.index[-1] + timedelta(days=1), periods=steps, freq="D")
     forecast = result.get_forecast(steps=steps)
     pred = forecast.predicted_mean
