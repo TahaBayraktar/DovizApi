@@ -2,7 +2,7 @@ name: Train SARIMA Model Daily
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # ⏱️ Her 5 dakikada bir çalışır (UTC)
+    - cron: '*/1 * * * *'  # ⏱️ Her 5 dakikada bir çalışır (UTC)
   workflow_dispatch:
 
 jobs:
