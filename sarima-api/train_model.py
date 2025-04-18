@@ -11,7 +11,7 @@ from pytz import timezone
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-def get_forecast_for_currency(series_code, label, steps=30):
+def get_forecast_for_currency(series_code, label, steps=90):  # ⬅️ 90 günlük tahmin
     startDate = "01-01-2021"
     
     # 🇹🇷 Türkiye saatiyle bugünün tarihi
@@ -62,16 +62,16 @@ def get_forecast_for_currency(series_code, label, steps=30):
     
     return forecast_data
 
-# 🔮 Tahminleri al
-usd_forecast = get_forecast_for_currency("TP.DK.USD.S.YTL", "USD")
-eur_forecast = get_forecast_for_currency("TP.DK.EUR.S.YTL", "EUR")
+# 🔮 Tahminleri al (artık 90 gün)
+usd_forecast = get_forecast_for_currency("TP.DK.USD.S.YTL", "USD", steps=90)
+eur_forecast = get_forecast_for_currency("TP.DK.EUR.S.YTL", "EUR", steps=90)
 
 # ⏰ Türkiye saatiyle tahmin zamanı
 turkey_now = datetime.now(timezone("Europe/Istanbul")).strftime("%Y-%m-%d %H:%M:%S")
 
 output = {
     "generated_at": turkey_now,
-    "forecast_days": 30,
+    "forecast_days": 90,  # ⬅️ Güncellendi
     "forecasts": {
         "USD": usd_forecast,
         "EUR": eur_forecast
