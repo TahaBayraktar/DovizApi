@@ -60,6 +60,13 @@ json_output = [
     for i, date in enumerate(future_dates)
 ]
 
+
+# json_output listesine ek olarak bir metadata dict'i yaz
+output_data = {
+    "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    "forecasts": json_output
+}
+
 with open("tahmin.json", "w", encoding="utf-8") as f:
     json.dump(json_output, f, ensure_ascii=False, indent=2)
 
