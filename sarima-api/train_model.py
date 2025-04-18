@@ -8,6 +8,9 @@ from datetime import datetime, timedelta
 import os
 import urllib3
 
+print("🔐 Secret geldi mi?", "EVDS_API_KEY" in os.environ)
+print("🔑 API anahtarı:", os.getenv("EVDS_API_KEY")[:4] + "*****")
+
 # Uyarı bastır (TCMB için SSL doğrulama devre dışı)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
