@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import json
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-from io import StringIO
 from datetime import datetime, timedelta
 import os
 import urllib3
@@ -15,8 +14,8 @@ def fetch_currency_data(series_code):
     endDate = datetime.now().strftime("%d-%m-%Y")
 
     url = (
-        f"https://evds2.tcmb.gov.tr/service/evds/series={series_code}"
-        f"&startDate={startDate}&endDate={endDate}&type=csv"
+        f"https://evds3.tcmb.gov.tr/igmevdsms-dis/series={series_code}"
+        f"&startDate={startDate}&endDate={endDate}&type=json"
         f"&aggregationTypes=avg&formulas=0&frequency=1"
     )
 
@@ -30,9 +29,10 @@ def fetch_currency_data(series_code):
         print(f"❌ Veri alınamadı: {series_code} (HTTP {response.status_code})")
         return []
 
-    df = pd.read_csv(StringIO(response.text)).dropna()
+    df = pd.DataFrame(response.json()["items"]).dropna()
     df.set_index("Tarih", inplace=True)
     df.rename(columns={series_code.replace(".", "_"): "Kur"}, inplace=True)
+    df["Kur"] = df["Kur"].astype(float)
     df.index = pd.to_datetime(df.index, format="%d-%m-%Y")
 
     model = SARIMAX(df["Kur"], order=(1,1,1), seasonal_order=(1,1,1,30))

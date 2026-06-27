@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import json
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-from io import StringIO
 from datetime import datetime, timedelta
 import os
 import urllib3
@@ -19,11 +18,11 @@ def get_forecast_for_currency(series_code, label, steps=90):  # ⬅️ 90 günl�
     endDate = turkey_time.strftime("%d-%m-%Y")
     
     url = (
-        f"https://evds2.tcmb.gov.tr/service/evds/series={series_code}"
-        f"&startDate={startDate}&endDate={endDate}&type=csv"
+        f"https://evds3.tcmb.gov.tr/igmevdsms-dis/series={series_code}"
+        f"&startDate={startDate}&endDate={endDate}&type=json"
         f"&aggregationTypes=avg&formulas=0&frequency=1"
     )
-    
+
     headers = {
         "User-Agent": "Mozilla/5.0",
         "key": os.getenv("EVDS_API_KEY")
@@ -35,9 +34,10 @@ def get_forecast_for_currency(series_code, label, steps=90):  # ⬅️ 90 günl�
         print(f"❌ {label} verisi alınamadı. HTTP {response.status_code}")
         return []
 
-    df = pd.read_csv(StringIO(response.text)).dropna()
+    df = pd.DataFrame(response.json()["items"]).dropna()
     df.set_index("Tarih", inplace=True)
     df.rename(columns={series_code.replace(".", "_"): "Kur"}, inplace=True)
+    df["Kur"] = df["Kur"].astype(float)
     df.index = pd.to_datetime(df.index, format="%d-%m-%Y")
 
     print(f"⚙️ {label} modeli eğitiliyor...")
